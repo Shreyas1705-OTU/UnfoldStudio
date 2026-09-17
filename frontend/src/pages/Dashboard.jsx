@@ -53,6 +53,7 @@ export default function Dashboard() {
       <div className="page-header">
         <h1>Studio Overview</h1>
         <div className="header-actions">
+          <Link to="/clients/summary" className="btn">Show All</Link>
           <Link to="/events/new" className="btn">+ Add Event</Link>
           <Link to="/clients/new" className="btn btn-primary">+ New Client</Link>
         </div>
