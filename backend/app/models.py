@@ -100,3 +100,16 @@ class FileLink(Base):
     added_at: Mapped[dt.datetime] = mapped_column(DateTime, default=dt.datetime.utcnow)
 
     client: Mapped["Client"] = relationship(back_populates="files")
+
+
+class FreelanceEvent(Base):
+    """Unbooked/freelancing opportunities not tied to a client, e.g. car shows."""
+
+    __tablename__ = "freelance_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    event_date: Mapped[dt.date] = mapped_column(Date, nullable=False)
+    location: Mapped[str | None] = mapped_column(String)
+    notes: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime, default=dt.datetime.utcnow)

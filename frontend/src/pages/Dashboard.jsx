@@ -6,18 +6,26 @@ import Clock from '../components/Clock.jsx'
 
 export default function Dashboard() {
   const [clients, setClients] = useState(null)
+  const [freelanceEvents, setFreelanceEvents] = useState(null)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
+  const reload = () => {
     api.listClients().then(setClients).catch((e) => setError(e.message))
+    api.listFreelanceEvents().then(setFreelanceEvents).catch((e) => setError(e.message))
+  }
+
+  useEffect(() => {
+    reload()
   }, [])
 
   const events = useMemo(() => {
-    if (!clients) return []
-    return clients
+    const clientEvents = (clients || [])
       .filter((c) => c.event_date)
-      .map((c) => ({ date: c.event_date, label: c.name }))
-  }, [clients])
+      .map((c) => ({ date: c.event_date, label: c.name, type: 'client' }))
+    const freelance = (freelanceEvents || [])
+      .map((e) => ({ date: e.event_date, label: e.title, type: 'freelance' }))
+    return [...clientEvents, ...freelance]
+  }, [clients, freelanceEvents])
 
   const stats = useMemo(() => {
     if (!clients) return null
@@ -31,14 +39,23 @@ export default function Dashboard() {
     return { total: clients.length, totalPending, upcomingShoots }
   }, [clients])
 
-  if (error) return <div className="error">Couldn't load clients: {error}</div>
-  if (!clients) return <div className="empty">Loading…</div>
+  const handleDeleteEvent = async (id) => {
+    if (!confirm('Remove this freelance event?')) return
+    await api.deleteFreelanceEvent(id)
+    reload()
+  }
+
+  if (error) return <div className="error">Couldn't load dashboard: {error}</div>
+  if (!clients || !freelanceEvents) return <div className="empty">Loading…</div>
 
   return (
     <div>
       <div className="page-header">
         <h1>Studio Overview</h1>
-        <Link to="/clients/new" className="btn btn-primary">+ New Client</Link>
+        <div className="header-actions">
+          <Link to="/events/new" className="btn">+ Add Event</Link>
+          <Link to="/clients/new" className="btn btn-primary">+ New Client</Link>
+        </div>
       </div>
 
       <div className="widget-row">
@@ -87,6 +104,25 @@ export default function Dashboard() {
             </Link>
           ))}
         </div>
+      )}
+
+      <h2 className="section-title">Freelance Events</h2>
+
+      {freelanceEvents.length === 0 ? (
+        <div className="empty">No freelance events logged yet.</div>
+      ) : (
+        <ul className="entry-list">
+          {freelanceEvents.map((e) => (
+            <li key={e.id} className="entry entry-row">
+              <div>
+                <div><span className="calendar-dot calendar-dot-freelance" /> <strong>{e.title}</strong> — {e.event_date}</div>
+                {e.location && <div className="entry-meta">{e.location}</div>}
+                {e.notes && <div className="entry-meta">{e.notes}</div>}
+              </div>
+              <button className="btn btn-danger btn-small" onClick={() => handleDeleteEvent(e.id)}>Remove</button>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   )

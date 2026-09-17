@@ -57,6 +57,16 @@ def main():
     check(client.get(f"/clients/{client_id}"), expected=404)
     print("delete + cascade ok")
 
+    event = check(client.post("/events", json={
+        "title": "Downtown Car Show",
+        "event_date": "2026-10-05",
+        "location": "Main Street Lot",
+    }))
+    assert len(check(client.get("/events"))) == 1
+    check(client.delete(f"/events/{event['id']}"))
+    assert len(check(client.get("/events"))) == 0
+    print("freelance events ok")
+
     print("\nSMOKE TEST PASSED")
 
 

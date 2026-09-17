@@ -138,3 +138,20 @@ class ClientDetail(ClientOut):
     contracts: list[ContractOut]
     timeline: list[TimelineOut]
     files: list[FileOut]
+
+
+class FreelanceEventCreate(BaseModel):
+    title: str
+    event_date: dt.date
+    location: str | None = None
+    notes: str | None = None
+
+
+class FreelanceEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    title: str
+    event_date: dt.date
+    location: str | None
+    notes: str | None
+    created_at: dt.datetime

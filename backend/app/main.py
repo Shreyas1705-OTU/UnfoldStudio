@@ -142,3 +142,27 @@ def add_file(client_id: int, payload: schemas.FileCreate, db: Session = Depends(
     db.commit()
     db.refresh(file_link)
     return file_link
+
+
+@app.get("/events", response_model=list[schemas.FreelanceEventOut])
+def list_freelance_events(db: Session = Depends(get_db)):
+    return db.query(models.FreelanceEvent).order_by(models.FreelanceEvent.event_date).all()
+
+
+@app.post("/events", response_model=schemas.FreelanceEventOut)
+def create_freelance_event(payload: schemas.FreelanceEventCreate, db: Session = Depends(get_db)):
+    event = models.FreelanceEvent(**payload.model_dump())
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+    return event
+
+
+@app.delete("/events/{event_id}")
+def delete_freelance_event(event_id: int, db: Session = Depends(get_db)):
+    event = db.get(models.FreelanceEvent, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    db.delete(event)
+    db.commit()
+    return {"ok": True}

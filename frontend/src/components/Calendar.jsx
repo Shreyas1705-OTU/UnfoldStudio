@@ -5,7 +5,7 @@ function toKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-// events: array of { date: 'YYYY-MM-DD', label }
+// events: array of { date: 'YYYY-MM-DD', label, type: 'client' | 'freelance' }
 export default function Calendar({ events }) {
   const today = new Date()
   const year = today.getFullYear()
@@ -14,7 +14,7 @@ export default function Calendar({ events }) {
   const eventsByDate = {}
   for (const e of events) {
     if (!eventsByDate[e.date]) eventsByDate[e.date] = []
-    eventsByDate[e.date].push(e.label)
+    eventsByDate[e.date].push(e)
   }
 
   const firstOfMonth = new Date(year, month, 1)
@@ -30,7 +30,7 @@ export default function Calendar({ events }) {
   const upcoming = Object.keys(eventsByDate)
     .filter((key) => key >= toKey(today))
     .sort()
-    .slice(0, 3)
+    .slice(0, 4)
 
   return (
     <div className="widget calendar-widget">
@@ -42,25 +42,37 @@ export default function Calendar({ events }) {
         {cells.map((day, i) => {
           if (day === null) return <div key={i} className="calendar-cell calendar-cell-empty" />
           const key = toKey(new Date(year, month, day))
+          const dayEvents = eventsByDate[key] || []
           const isToday = day === today.getDate()
-          const hasEvent = Boolean(eventsByDate[key])
+          const hasClient = dayEvents.some((e) => e.type === 'client')
+          const hasFreelance = dayEvents.some((e) => e.type === 'freelance')
           return (
             <div
               key={i}
-              className={`calendar-cell ${isToday ? 'calendar-today' : ''} ${hasEvent ? 'calendar-has-event' : ''}`}
-              title={hasEvent ? eventsByDate[key].join(', ') : undefined}
+              className={`calendar-cell ${isToday ? 'calendar-today' : ''}`}
+              title={dayEvents.length ? dayEvents.map((e) => e.label).join(', ') : undefined}
             >
               {day}
+              {(hasClient || hasFreelance) && (
+                <span className="calendar-dots">
+                  {hasClient && <span className="calendar-dot calendar-dot-client" />}
+                  {hasFreelance && <span className="calendar-dot calendar-dot-freelance" />}
+                </span>
+              )}
             </div>
           )
         })}
+      </div>
+      <div className="calendar-legend">
+        <span><span className="calendar-dot calendar-dot-client" /> Client shoot</span>
+        <span><span className="calendar-dot calendar-dot-freelance" /> Freelance event</span>
       </div>
       {upcoming.length > 0 && (
         <div className="calendar-upcoming">
           {upcoming.map((key) => (
             <div key={key} className="calendar-upcoming-row">
               <span className="calendar-upcoming-date">{key.slice(5)}</span>
-              <span>{eventsByDate[key].join(', ')}</span>
+              <span>{eventsByDate[key].map((e) => e.label).join(', ')}</span>
             </div>
           ))}
         </div>

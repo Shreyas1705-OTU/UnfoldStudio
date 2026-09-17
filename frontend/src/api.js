@@ -26,4 +26,8 @@ export const api = {
   addContract: (id, data) => request(`/clients/${id}/contracts`, { method: 'POST', body: JSON.stringify(data) }),
   addTimelineEvent: (id, data) => request(`/clients/${id}/timeline`, { method: 'POST', body: JSON.stringify(data) }),
   addFile: (id, data) => request(`/clients/${id}/files`, { method: 'POST', body: JSON.stringify(data) }),
+
+  listFreelanceEvents: () => request('/events'),
+  createFreelanceEvent: (data) => request('/events', { method: 'POST', body: JSON.stringify(data) }),
+  deleteFreelanceEvent: (id) => request(`/events/${id}`, { method: 'DELETE' }),
 }

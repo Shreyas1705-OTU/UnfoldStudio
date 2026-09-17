@@ -2,6 +2,7 @@ import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import ClientDetail from './pages/ClientDetail.jsx'
 import ClientForm from './pages/ClientForm.jsx'
 import Dashboard from './pages/Dashboard.jsx'
+import EventForm from './pages/EventForm.jsx'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/clients/new" element={<ClientForm />} />
+            <Route path="/events/new" element={<EventForm />} />
             <Route path="/clients/:id" element={<ClientDetail />} />
           </Routes>
         </main>
