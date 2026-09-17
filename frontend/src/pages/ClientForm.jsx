@@ -12,6 +12,7 @@ export default function ClientForm() {
     email: '',
     instagram: '',
     event_type: EVENT_TYPES[0],
+    event_type_other: '',
     event_date: '',
     total_package: '',
   })
@@ -25,8 +26,10 @@ export default function ClientForm() {
     setSaving(true)
     setError(null)
     try {
+      const { event_type_other, ...rest } = form
       const payload = {
-        ...form,
+        ...rest,
+        event_type: form.event_type === 'Other' ? event_type_other.trim() : form.event_type,
         event_date: form.event_date || null,
         total_package: form.total_package ? Number(form.total_package) : null,
       }
@@ -66,6 +69,17 @@ export default function ClientForm() {
             ))}
           </select>
         </label>
+        {form.event_type === 'Other' && (
+          <label>
+            Please specify
+            <input
+              required
+              value={form.event_type_other}
+              onChange={update('event_type_other')}
+              placeholder="e.g. Birthday shoot"
+            />
+          </label>
+        )}
         <label>
           Event date
           <input type="date" value={form.event_date} onChange={update('event_date')} />

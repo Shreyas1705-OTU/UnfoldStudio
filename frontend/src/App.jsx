@@ -8,7 +8,7 @@ export default function App() {
     <Router>
       <div className="app">
         <header className="topbar">
-          <Link to="/" className="brand">📷 Client Manager</Link>
+          <Link to="/" className="brand">UnfoldStudio</Link>
         </header>
         <main className="content">
           <Routes>
